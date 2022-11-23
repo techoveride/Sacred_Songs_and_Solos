@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "656341896992",
+    "firebase_url": "https://sacred-songs-solos.firebaseio.com",
+    "project_id": "sacred-songs-solos",
+    "storage_bucket": "sacred-songs-solos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656341896992:android:828034c5a411bc7a325145",
+        "android_client_info": {
+          "package_name": "com.hymnestry.hymn_book"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656341896992-0is2bqq51jlsgbbftl8kgfr3mtvcnldn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANDOzNIFlcJXm-_SGox2iL13qHUUzpHKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656341896992-0is2bqq51jlsgbbftl8kgfr3mtvcnldn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-2165165254805026~3278444117"
+    }
+  ],
+  "configuration_version": "1"
+}
