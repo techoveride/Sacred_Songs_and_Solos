@@ -25,16 +25,16 @@ bool isLoaded = false;
 //remote config variables
 String app_update = "";
 String app_version = "";
-String more_apps = 'https://hymnestry.com/';
-String share_app = 'https://hymnestry.com/';
+String more_apps = 'https://hymnestry.techoveride.com/';
+String share_app = 'https://hymnestry.techoveride.com/';
 String APP_STORE_URL =
     'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.hymn_book&mt=8';
 String PLAY_STORE_URL =
     'https://play.google.com/store/apps/details?id=com.hymnestry.hymn_book';
 String PREMIUM_APP_STORE_URL =
-    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.hymn_book&mt=8';
+    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.hymn_book_pro&mt=8';
 String PREMIUM_PLAY_STORE_URL =
-    'https://play.google.com/store/apps/details?id=com.hymnestry.hymn_book';
+    'https://play.google.com/store/apps/details?id=com.hymnestry.hymn_book_pro';
 
 late List<Hymns> defaultHymn;
 const fileName = "HymnLyricsEnglish_v1.json";
