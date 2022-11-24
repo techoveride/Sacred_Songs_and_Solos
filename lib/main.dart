@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hymn_book/ads/anchored_adaptive_ad.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/util/main_details_screen.dart';
 import 'package:path/path.dart';
@@ -132,7 +133,15 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
               theme: snapshot.data! ? ThemeData.dark() : globals.defaultTheme(),
               debugShowCheckedModeBanner: false,
-              home: MasterDetailsScreen());
+              builder: (context, ads) {
+                return Column(
+                  children: [
+                    Expanded(child: ads!),
+                    const AnchoredAdaptiveAd(),
+                  ],
+                );
+              },
+              home: const MasterDetailsScreen());
         });
   }
 }

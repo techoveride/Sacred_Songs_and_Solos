@@ -42,8 +42,8 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
     _anchoredAdaptiveAd = BannerAd(
       adUnitId: Platform.isAndroid
-          // ? 'ca-app-pub-2165165254805026/8683500374'
-          ? 'ca-app-pub-3940256099942544/6300978111'
+          ? 'ca-app-pub-2165165254805026/8683500374'
+          // ? 'ca-app-pub-3940256099942544/6300978111'
           : 'ca-app-pub-3940256099942544/2934735716',
       size: size,
       request: const AdRequest(nonPersonalizedAds: true),
@@ -79,7 +79,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
             _anchoredAdaptiveAd != null &&
             _isLoaded) {
           return Container(
-            color: Colors.green,
+            color: Colors.transparent,
             width: _anchoredAdaptiveAd!.size.width.toDouble(),
             height: _anchoredAdaptiveAd!.size.height.toDouble(),
             child: AdWidget(ad: _anchoredAdaptiveAd!),

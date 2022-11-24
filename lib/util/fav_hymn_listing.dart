@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
-import 'package:hymn_book/ads/anchored_adaptive_ad.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:path_provider/path_provider.dart';
@@ -242,13 +241,7 @@ class _FavHymnListingState extends State<FavHymnListing> {
                 ),
         ),
       ),
-      OrientationBuilder(builder: (context, orientation) {
-        if (MediaQuery.of(context).orientation == Orientation.portrait) {
-          return const AnchoredAdaptiveAd();
-        } else {
-          return Container();
-        }
-      })
+      // const AnchoredAdaptiveAd(),
     ]);
   }
 

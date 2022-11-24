@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hymn_book/ads/anchored_adaptive_ad.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:hymn_book/util/fav_hymn_listing.dart';
@@ -56,8 +55,8 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   void _createInterstitialAd() {
     InterstitialAd.load(
         adUnitId: Platform.isAndroid
-            // ? 'ca-app-pub-2165165254805026/2118092023'
-            ? 'ca-app-pub-3940256099942544/1033173712'
+            ? 'ca-app-pub-2165165254805026/2118092023'
+            // ? 'ca-app-pub-3940256099942544/1033173712'
             : 'ca-app-pub-3940256099942544/4411468910',
         request: request,
         adLoadCallback: InterstitialAdLoadCallback(
@@ -117,8 +116,6 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
     appOpenAdManager.loadAd();
     WidgetsBinding.instance.addObserver(this);
 
-    //load and show banner
-    // loadBanner();
     //load Interstitial Ad
     loadInterstitial();
     tabController.addListener(() async {
@@ -132,7 +129,6 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   @override
   void dispose() {
     tabController.dispose();
-    // _bannerAd?.dispose();
     _interstitialAd?.dispose();
     main.isLightTheme.close();
     main.isLightTheme.close();
@@ -172,7 +168,7 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   bool activeSearch = false;
   final _searchController = TextEditingController();
 
-  late Key searchBox;
+  Key? searchBox;
   final _kTabs = <Tab>[
     const Tab(
       text: "All",
@@ -402,8 +398,6 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
             // destroyBanner: destroyBanner,
             // buildBanner: buildBanner,
           ),
-          bottomNavigationBar:
-              isTabletLayout ? const AnchoredAdaptiveAd() : null,
         ),
       ),
     );
@@ -600,7 +594,7 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   void loadInterstitial() {
     _createInterstitialAd();
     //show interstitial timer
-    Timer(const Duration(seconds: 60), () {
+    Timer(const Duration(minutes: 6), () {
       _showInterstitialAd();
     });
   }
