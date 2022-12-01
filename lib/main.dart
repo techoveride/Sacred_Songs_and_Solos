@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hymn_book/ads/anchored_adaptive_ad.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/util/main_details_screen.dart';
 import 'package:path/path.dart';
@@ -30,11 +29,13 @@ void main() async {
         'A1D024014755730901F48A2A06933E1F',
         '0D7F74813DAA8CF871287A05BE47FDE7'
       ]));
+  // MobileAds.instance.openAdInspector((p0) {});
+
   // testDeviceIds: ['0D7F74813DAA8CF871287A05BE47FDE7']));
 
   //Checks if Hymn File Storage is Created
   await getApplicationDocumentsDirectory().then((directory) async {
-    jsonFile = File(join(directory.path, 'HymnLyricsEnglish.json'));
+    jsonFile = File(join(directory.path, globals.fileName));
     fileExists = jsonFile.existsSync();
     if (fileExists) {
       debugPrint("File Already Created");
@@ -46,7 +47,7 @@ void main() async {
     } else {
       debugPrint("Creating and Writing to File");
       final file = await getApplicationDocumentsDirectory().then((dir) {
-        return File(join(dir.path, 'HymnLyricsEnglish.json'));
+        return File(join(dir.path, globals.fileName));
       });
       file.writeAsStringSync(json.encode(listHymns));
       //Loads hymns from bootup
@@ -133,14 +134,14 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
               theme: snapshot.data! ? ThemeData.dark() : globals.defaultTheme(),
               debugShowCheckedModeBanner: false,
-              builder: (context, ads) {
-                return Column(
-                  children: [
-                    Expanded(child: ads!),
-                    const AnchoredAdaptiveAd(),
-                  ],
-                );
-              },
+              // builder: (context, ads) {
+              //   return Column(
+              //     children: [
+              //       Expanded(child: ads!),
+              //       const AnchoredAdaptiveAd(),
+              //     ],
+              //   );
+              // },
               home: const MasterDetailsScreen());
         });
   }

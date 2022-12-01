@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +24,6 @@ class HymnListing extends StatefulWidget {
 class _HymnListingState extends State<HymnListing> {
   late File jsonFile;
   late Directory dir;
-  String fileName = "HymnLyricsEnglish.json";
   bool fileExists = false;
 
   late List<Hymns> _hymnList;
@@ -33,6 +33,9 @@ class _HymnListingState extends State<HymnListing> {
   final ScrollController _scrollControl = ScrollController();
 
   static const double _itemExtent = 58.0;
+
+  //Ads
+  BannerAd? _anchoredAdaptiveAd;
 
   Future<List<Hymns>> getHymn() async {
     jsonFile = await _localFile;
@@ -54,7 +57,7 @@ class _HymnListingState extends State<HymnListing> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/HymnLyricsEnglish.json');
+    return File("$path/${globals.fileName}");
   }
 
   // Future<File> _writeData(String message) async {

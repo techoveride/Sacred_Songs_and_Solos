@@ -9,8 +9,9 @@ class AboutUs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context).colorScheme;
-    String versionName =
-        "${globals.app_version.substring(0, 1)}.${globals.app_version.substring(1, 2)}.${globals.app_version.substring(2)}";
+    String versionName = "${globals.app_version.substring(0, 1)}."
+        "${globals.app_version.substring(1, 2)}"
+        ".${globals.app_version.substring(2)}";
 
     return Scaffold(
       appBar: AppBar(

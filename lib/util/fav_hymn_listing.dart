@@ -102,7 +102,6 @@ class _FavHymnListingState extends State<FavHymnListing> {
 
   late File jsonFile;
   late Directory dir;
-  String fileName = "HymnLyricsEnglish.json";
   bool fileExists = false;
 
   Future<List<Hymns>> getHymn() async {
@@ -129,7 +128,7 @@ class _FavHymnListingState extends State<FavHymnListing> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/HymnLyricsEnglish.json');
+    return File("$path/${globals.fileName}");
   }
 
   loadFav() async {
@@ -326,7 +325,7 @@ class _FavHymnListingState extends State<FavHymnListing> {
   }*/
   Future<File> _writeData(String message) async {
     final file = await getApplicationDocumentsDirectory().then((dir) {
-      return File("${dir.path}/HymnLyricsEnglish.json");
+      return File("${dir.path}/${globals.fileName}");
     });
     return file.writeAsString(message);
   }

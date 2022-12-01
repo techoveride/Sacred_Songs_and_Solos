@@ -6,10 +6,16 @@ class AppOpenAdManager {
   bool _isShowingAd = false;
   static bool isLoaded = false;
 
+  /// Maximum duration allowed between loading and showing the ad.
+  final Duration maxCacheDuration = const Duration(hours: 4);
+
+  /// Keep track of load time so we don't show an expired ad.
+  DateTime? _appOpenLoadTime;
+
   /// Load an AppOpenAd.
   void loadAd() {
     AppOpenAd.load(
-      adUnitId: "ca-app-pub-2165165254805026/3087898072",
+      adUnitId: "ca-app-pub-2165165254805026/6522356999",
       // adUnitId: "ca-app-pub-3940256099942544/3419835294",
       orientation: AppOpenAd.orientationPortrait,
       request: const AdRequest(),
@@ -20,6 +26,7 @@ class AppOpenAdManager {
           }
           _appOpenAd = ad;
           isLoaded = true;
+          _appOpenLoadTime = DateTime.now();
         },
         onAdFailedToLoad: (error) {
           // Handle the error.
@@ -51,6 +58,13 @@ class AppOpenAdManager {
       }
       return;
     }
+    if (DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
+      debugPrint('Maximum cache duration exceeded. Loading another ad.');
+      _appOpenAd!.dispose();
+      _appOpenAd = null;
+      loadAd();
+      return;
+    }
     // Set the fullScreenContentCallback and show the ad.
     _appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
@@ -72,6 +86,7 @@ class AppOpenAdManager {
           print('$ad onAdDismissedFullScreenContent');
         }
         _isShowingAd = false;
+
         ad.dispose();
         _appOpenAd = null;
         loadAd();

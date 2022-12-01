@@ -8,6 +8,9 @@ import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:share/share.dart';
 
+import '../ads/applifecyclereactor.dart';
+import '../ads/appopenadmanager.dart';
+
 GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
 GlobalKey<_FavHymnDetailsState> favHymnDetailKey = GlobalKey();
 
@@ -25,10 +28,10 @@ class FavHymnDetails extends StatefulWidget {
   _FavHymnDetailsState createState() => _FavHymnDetailsState();
 }
 
-class _FavHymnDetailsState extends State<FavHymnDetails> {
+class _FavHymnDetailsState extends State<FavHymnDetails>
+    with WidgetsBindingObserver {
   late File jsonFile;
   late Directory dir;
-  String fileName = "HymnLyricsEnglish.json";
   bool fileExists = false;
   var hymn;
 
@@ -41,6 +44,10 @@ class _FavHymnDetailsState extends State<FavHymnDetails> {
   double? barHeight;
   bool tuneIconVisibility = true;
   late ScrollController _scrollController;
+
+  //AppOpenAds
+  AppOpenAdManager appOpenAdManager = AppOpenAdManager();
+  late AppLifecycleReactor _appLifecycleReactor;
 
 //load Audio file
   void initAudioPlayer() {
@@ -83,48 +90,26 @@ class _FavHymnDetailsState extends State<FavHymnDetails> {
     super.initState();
     initAudioPlayer();
     _scrollController = ScrollController();
+
+    //App Open Ads
+    appOpenAdManager = AppOpenAdManager()..loadAd();
+    _appLifecycleReactor =
+        AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
+    WidgetsBinding.instance.addObserver(this);
   }
 
-  /*_loadBgColor() async {
-    SharedPreferences bgColorPref = await SharedPreferences.getInstance();
-    var color = bgColorPref.getInt("bgColor");
-    setState(() {
-      if (color != null) globals.bgColor = Color(color);
-    });
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState;
+    _appLifecycleReactor.listenToAppStateChanges();
   }
 
-  _loadTxtColor() async {
-    SharedPreferences txtColorPref = await SharedPreferences.getInstance();
-    var color = txtColorPref.getInt("txtColor");
-    setState(() {
-      if (color != null) globals.txtColor = Color(color);
-    });
-  }
-
-  _loadFontSize() async {
-    SharedPreferences fontSizePref = await SharedPreferences.getInstance();
-    var size = fontSizePref.getDouble("fontSize");
-    setState(() {
-      if (size != null)
-        globals.fontSize = size;
-      else
-        globals.fontSize = 18.0;
-    });
-  }
-
-  _loadLineSp() async {
-    SharedPreferences lineSpPref = await SharedPreferences.getInstance();
-    var size = lineSpPref.getDouble("lineSp");
-    setState(() {
-      if (size != null) globals.lineSp = size;
-    });
-  }
-*/
   @override
   void dispose() {
     audioPlayerStateSubs.cancel();
     _scrollController.dispose();
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
   /*Future<List<Hymns>> getHymn() async {
     jsonFile = await getApplicationDocumentsDirectory()
@@ -143,7 +128,7 @@ class _FavHymnDetailsState extends State<FavHymnDetails> {
 
   /* Future<File> _writeData(String message) async {
     final file = await getApplicationDocumentsDirectory().then((dir) {
-      return File("${dir.path}/HymnLyricsEnglish.json");
+      return File("${dir.path}/${globals.fileName}");
     });
     return file.writeAsString('$message');
   }*/

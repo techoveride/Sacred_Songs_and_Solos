@@ -5,11 +5,13 @@ import 'dart:io';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:audioplayer/audioplayer.dart' as sound;
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
+
+import '../ads/applifecyclereactor.dart';
+import '../ads/appopenadmanager.dart';
 
 GlobalKey<_HymnDetailsState> hymnDetailKey = GlobalKey();
 
@@ -25,13 +27,12 @@ class HymnDetails extends StatefulWidget {
   _HymnDetailsState createState() => _HymnDetailsState();
 }
 
-class _HymnDetailsState extends State<HymnDetails> {
+class _HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
   GlobalKey<ScaffoldState> tabViewScaffold = GlobalKey();
 
   late File jsonFile;
   late Directory dir;
-  String fileName = "HymnLyricsEnglish.json";
   bool fileExists = false;
   var hymn;
   List<Hymns>? _hymnList;
@@ -49,6 +50,10 @@ class _HymnDetailsState extends State<HymnDetails> {
   double? barHeight;
   bool tuneIconVisibility = true;
   late ScrollController _scrollController;
+
+  //AppOpenAds
+  AppOpenAdManager appOpenAdManager = AppOpenAdManager();
+  late AppLifecycleReactor _appLifecycleReactor;
 
 //load Audio file
   void initAudioPlayer() {
@@ -93,20 +98,31 @@ class _HymnDetailsState extends State<HymnDetails> {
     initAudioPlayer();
     _scrollController = ScrollController();
     getHymn();
-
+    //App Open Ads
+    appOpenAdManager = AppOpenAdManager()..loadAd();
+    _appLifecycleReactor =
+        AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState;
+    _appLifecycleReactor.listenToAppStateChanges();
   }
 
   @override
   void dispose() {
     audioPlayerStateSubs.cancel();
     _scrollController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   Future<File> _writeData(String message) async {
     final file = await getApplicationDocumentsDirectory().then((dir) {
-      return File("${dir.path}/HymnLyricsEnglish.json");
+      return File("${dir.path}/${globals.fileName}");
     });
     return file.writeAsString(message);
   }
@@ -119,7 +135,7 @@ class _HymnDetailsState extends State<HymnDetails> {
 
   Future<List<Hymns>?> getHymn() async {
     jsonFile = await getApplicationDocumentsDirectory()
-        .then((dir) => File("${dir.path}/$fileName"));
+        .then((dir) => File("${dir.path}/${globals.fileName}"));
     fileExists = jsonFile.existsSync();
     if (fileExists) {
       hymn = json.decode(jsonFile.readAsStringSync());

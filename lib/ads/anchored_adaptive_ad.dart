@@ -15,6 +15,13 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
+  double adHeight = 0.0;
+
+  void closeBanner() {
+    if (_isLoaded) {
+      _anchoredAdaptiveAd?.dispose();
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -57,6 +64,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
             // the height of the ad container.
             _anchoredAdaptiveAd = ad as BannerAd;
             _isLoaded = true;
+            adHeight = _anchoredAdaptiveAd!.size.height.toDouble();
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
@@ -79,7 +87,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
             _anchoredAdaptiveAd != null &&
             _isLoaded) {
           return Container(
-            color: Colors.transparent,
+            color: Colors.green,
             width: _anchoredAdaptiveAd!.size.width.toDouble(),
             height: _anchoredAdaptiveAd!.size.height.toDouble(),
             child: AdWidget(ad: _anchoredAdaptiveAd!),
@@ -97,8 +105,6 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: _getAdWidget(),
-    );
+    return SizedBox(height: adHeight + 4, child: _getAdWidget());
   }
 }

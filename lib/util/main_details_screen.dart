@@ -6,17 +6,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:hymn_book/model/hymn.dart';
 import 'package:hymn_book/util/fav_hymn_listing.dart';
 import 'package:hymn_book/util/hymn_listing.dart';
 import 'package:hymn_book/util/my_drawer.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../ads/appopenadmanager.dart';
+import '../ads/anchored_adaptive_ad.dart';
 import '../main.dart' as main;
 import 'fav_hymn_details.dart';
 import 'hymn_details.dart';
@@ -36,23 +36,23 @@ class MasterDetailsScreen extends StatefulWidget {
 }
 
 class _MasterDetailsScreenState extends State<MasterDetailsScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with SingleTickerProviderStateMixin {
   int currentTabIndex = 0;
   bool tabFlag = true;
   late TabController tabController;
   //Google Ads setup
-  static const AdRequest request = AdRequest(
-    nonPersonalizedAds: true,
-  );
-  InterstitialAd? _interstitialAd;
-  int _numInterstitialLoadAttempts = 0;
+  // static const AdRequest request = AdRequest(
+  //   nonPersonalizedAds: true,
+  // );
+  late Orientation _currentOrientation;
+
+  //end Banner Ads
+  // InterstitialAd? _interstitialAd;
+  // int _numInterstitialLoadAttempts = 0;
 
   bool isTabletLayout = false;
 
-  AppOpenAdManager appOpenAdManager = AppOpenAdManager();
-  bool isPaused = false;
-
-  void _createInterstitialAd() {
+/*  void _createInterstitialAd() {
     InterstitialAd.load(
         adUnitId: Platform.isAndroid
             ? 'ca-app-pub-2165165254805026/2118092023'
@@ -102,22 +102,61 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
     );
     _interstitialAd!.show();
     _interstitialAd = null;
+  }*/
+  AppUpdateInfo? _updateInfo;
+
+  bool _flexibleUpdateAvailable = false;
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        _updateInfo = info;
+      });
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
+
+  void showSnack(String text) {
+    if (_mainDetailKey.currentContext != null) {
+      ScaffoldMessenger.of(_mainDetailKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
   }
 
   @override
   void initState() {
-//    themeMode();
     activeSearch = false;
     tabController =
         TabController(vsync: this, length: _kTabs.length, initialIndex: 0);
     super.initState();
+
+    checkForUpdate();
+    Future.delayed(const Duration(seconds: 1)).then((value) {
+      if (_updateInfo?.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
+        InAppUpdate.startFlexibleUpdate().then((_) {
+          setState(() {
+            _flexibleUpdateAvailable = true;
+          });
+        }).catchError((e) {
+          showSnack(e.toString());
+        });
+        if (_flexibleUpdateAvailable) {
+          InAppUpdate.completeFlexibleUpdate().then((_) {
+            showSnack("Success!");
+          }).catchError((e) {
+            showSnack(e.toString());
+          });
+        }
+      }
+    });
+
     //ads Setup
-    //Load AppOpen Ad
-    appOpenAdManager.loadAd();
-    WidgetsBinding.instance.addObserver(this);
 
     //load Interstitial Ad
-    loadInterstitial();
+    // loadInterstitial();
     tabController.addListener(() async {
       if (tabController.indexIsChanging) {
         await globals.player.stop();
@@ -129,26 +168,11 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   @override
   void dispose() {
     tabController.dispose();
-    _interstitialAd?.dispose();
+    // _interstitialAd?.dispose();
     main.isLightTheme.close();
     main.isLightTheme.close();
     super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
   }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused) {
-      isPaused = true;
-    }
-    if (state == AppLifecycleState.resumed && isPaused) {
-      debugPrint("Resumed==========================");
-      appOpenAdManager.showAdIfAvailable();
-      isPaused = false;
-    }
-  } //End of Ads setup
 
   static const int tabletBreakpoint = 600;
   Hymns _selectedHymn = Hymns(
@@ -392,12 +416,18 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
         child: Scaffold(
           key: _mainDetailKey,
           appBar: _appBar(),
-          body: TabBarView(controller: tabController, children: _kTabPages),
+          body: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: <Widget>[
+                TabBarView(controller: tabController, children: _kTabPages),
+                // const AnchoredAdaptiveAd(),
+              ]),
           drawer: MyDrawer(
             isTabletLayout: isTabletLayout,
             // destroyBanner: destroyBanner,
             // buildBanner: buildBanner,
           ),
+          bottomNavigationBar: const AnchoredAdaptiveAd(),
         ),
       ),
     );
@@ -591,13 +621,13 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
   //   _bannerAd?.load();
   // }
 
-  void loadInterstitial() {
-    _createInterstitialAd();
-    //show interstitial timer
-    Timer(const Duration(minutes: 6), () {
-      _showInterstitialAd();
-    });
-  }
+  // void loadInterstitial() {
+  //   _createInterstitialAd();
+  //   //show interstitial timer
+  //   Timer(const Duration(minutes: 6), () {
+  //     _showInterstitialAd();
+  //   });
+  // }
 
   // destroyBanner() async {
   //   await _bannerAd?.dispose();
